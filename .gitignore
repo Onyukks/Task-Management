@@ -1,0 +1,25 @@
+# Env
+.env
+.env.local
+*.local
+
+# Go
+backend/server
+backend/tmp/
+
+# Node / Next
+node_modules/
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.idea/
+*.swp
