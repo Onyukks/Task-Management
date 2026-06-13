@@ -90,7 +90,7 @@ export interface TaskInput {
   dueDate?: string | null;
 }
 
-function toQueryString(q: TaskQuery): string {
+export function toQueryString(q: TaskQuery): string {
   const params = new URLSearchParams();
   if (q.status) params.set("status", q.status);
   if (q.search) params.set("search", q.search);
