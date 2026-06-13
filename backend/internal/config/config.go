@@ -17,16 +17,24 @@ type Config struct {
 	// Production toggles Secure + SameSite=None on the auth cookie so it can be
 	// sent from a frontend hosted on a different domain than the API.
 	Production bool
+
+	// Optional demo admin: when both are set, an admin account is seeded on
+	// startup so reviewers can try the "view all tasks" admin feature without
+	// running SQL. Leave unset in real deployments.
+	SeedAdminEmail    string
+	SeedAdminPassword string
 }
 
 // Load reads configuration from the environment, returning an error when a
 // required value is missing so the server fails fast instead of half-booting.
 func Load() (*Config, error) {
 	c := &Config{
-		Port:           getenv("PORT", "8080"),
-		DatabaseURL:    os.Getenv("DATABASE_URL"),
-		FrontendOrigin: getenv("FRONTEND_ORIGIN", "http://localhost:3000"),
-		Production:     getenv("APP_ENV", "development") == "production",
+		Port:              getenv("PORT", "8080"),
+		DatabaseURL:       os.Getenv("DATABASE_URL"),
+		FrontendOrigin:    getenv("FRONTEND_ORIGIN", "http://localhost:3000"),
+		Production:        getenv("APP_ENV", "development") == "production",
+		SeedAdminEmail:    os.Getenv("SEED_ADMIN_EMAIL"),
+		SeedAdminPassword: os.Getenv("SEED_ADMIN_PASSWORD"),
 	}
 
 	if c.DatabaseURL == "" {

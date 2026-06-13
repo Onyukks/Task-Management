@@ -23,4 +23,10 @@ services:
       # Enables Secure + SameSite=None on the auth cookie for cross-site use.
       - key: APP_ENV
         value: production
+      # Optional: seed a demo admin so reviewers can try the admin view.
+      # Set both in the dashboard to enable (otherwise admin must be set via SQL).
+      - key: SEED_ADMIN_EMAIL
+        sync: false
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
       # Render injects PORT automatically; the server reads it.

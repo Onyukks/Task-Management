@@ -12,10 +12,13 @@ import (
 	"time"
 
 	chimw "github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/tech4mation/tasks-api/internal/auth"
 	"github.com/tech4mation/tasks-api/internal/config"
 	"github.com/tech4mation/tasks-api/internal/db"
 	"github.com/tech4mation/tasks-api/internal/server"
+	"github.com/tech4mation/tasks-api/internal/user"
 )
 
 func main() {
@@ -41,6 +44,8 @@ func main() {
 		os.Exit(1)
 	}
 	slog.Info("migrations applied")
+
+	seedDemoAdmin(ctx, pool, cfg)
 
 	handler := server.New(pool, cfg)
 
@@ -68,6 +73,24 @@ func main() {
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		slog.Error("graceful shutdown failed", "error", err)
 	}
+}
+
+// seedDemoAdmin creates a demo admin account when SEED_ADMIN_* are configured,
+// so reviewers can try the admin "view all tasks" feature without running SQL.
+func seedDemoAdmin(ctx context.Context, pool *pgxpool.Pool, cfg *config.Config) {
+	if cfg.SeedAdminEmail == "" || cfg.SeedAdminPassword == "" {
+		return
+	}
+	hash, err := auth.HashPassword(cfg.SeedAdminPassword)
+	if err != nil {
+		slog.Error("seed admin: hash failed", "error", err)
+		return
+	}
+	if err := user.NewRepo(pool).EnsureAdmin(ctx, cfg.SeedAdminEmail, "Demo Admin", hash); err != nil {
+		slog.Error("seed admin failed", "error", err)
+		return
+	}
+	slog.Info("demo admin ensured", "email", cfg.SeedAdminEmail)
 }
 
 // withRequestLogging logs each request with method, path, status, and duration.

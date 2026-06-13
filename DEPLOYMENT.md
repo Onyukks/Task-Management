@@ -33,10 +33,14 @@ git push -u origin main
 
 1. https://render.com → **New → Blueprint** → connect the repo. Render reads
    [`render.yaml`](render.yaml) and creates the `tasks-api` web service.
-2. Set the two `sync:false` env vars:
+2. Set the `sync:false` env vars:
    - `DATABASE_URL` → the Neon pooled string from step 1.
    - `FRONTEND_ORIGIN` → leave a placeholder for now (e.g. `https://example.com`);
      you'll update it in step 4.
+   - `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD` (optional but recommended) → e.g.
+     `admin@demo.io` / a password. This seeds an admin account so reviewers can
+     try the admin "view all tasks" feature by logging in — no SQL needed. Put
+     these credentials in the README's demo section.
 3. Deploy. When live, note the URL, e.g. `https://tasks-api.onrender.com`.
    Verify: `curl https://tasks-api.onrender.com/healthz` → `{"status":"ok"}`.
 

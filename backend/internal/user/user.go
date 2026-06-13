@@ -55,6 +55,18 @@ func (r *Repo) Create(ctx context.Context, email, name, passwordHash string) (*U
 	return &u, nil
 }
 
+// EnsureAdmin seeds (or promotes) a demo admin account. It is idempotent: if
+// the email is new it inserts an admin; if it already exists it just ensures
+// the role is admin without touching the existing password.
+func (r *Repo) EnsureAdmin(ctx context.Context, email, name, passwordHash string) error {
+	const q = `
+		INSERT INTO users (email, name, password_hash, role)
+		VALUES ($1, $2, $3, 'admin')
+		ON CONFLICT (email) DO UPDATE SET role = 'admin'`
+	_, err := r.db.Exec(ctx, q, normalizeEmail(email), name, passwordHash)
+	return err
+}
+
 // ByEmail loads a user (including the password hash) for login.
 func (r *Repo) ByEmail(ctx context.Context, email string) (*User, error) {
 	const q = `SELECT id, email, name, role, password_hash, created_at FROM users WHERE email = $1`

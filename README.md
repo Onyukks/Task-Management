@@ -6,7 +6,10 @@ keyboard-first (think Linear/Raycast) — rather than a CRUD demo.
 
 > **Live demo:** _add deployed frontend + API URLs here_
 >
-> **Demo login:** create an account in seconds, or use the seeded one if provided.
+> **Try it:** sign up in seconds for the normal user experience. To see the
+> **admin** "view all tasks" feature, log in with the seeded admin credentials
+> (see [Admin role](#admin-role)). Toggle **light/dark** with the sun/moon icon
+> (top-right) or via **⌘K → Toggle theme**.
 
 ---
 
@@ -162,14 +165,21 @@ GET /tasks?status=todo&search=report&sortBy=due_date&sortDir=asc&page=1&pageSize
 
 ## Admin role
 
-The admin bonus lets an admin view all users' tasks (toggle in the UI header).
-Roles aren't self-assignable; promote a user directly in the database:
+The admin bonus lets an admin view **all users' tasks** via a "View all tasks"
+toggle that appears in the header for admins. Roles aren't self-assignable
+(by design — letting anyone sign up as admin would be a security hole).
+
+**Easiest way to demo it:** set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`
+(see `backend/.env.example`). On startup the API seeds that admin account, so a
+reviewer can simply log in with those credentials and see the admin view.
+
+**Or** promote an existing user directly in the database:
 
 ```sql
 UPDATE users SET role = 'admin' WHERE email = 'you@example.com';
 ```
 
-Sign out and back in to refresh the token's role claim.
+(Sign out and back in to refresh the token's role claim.)
 
 ---
 
