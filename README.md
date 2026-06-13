@@ -254,9 +254,16 @@ frontend/
 
 ## Deployment
 
-- **Frontend** → Vercel. Set `NEXT_PUBLIC_API_URL` to the deployed API URL.
-- **Backend** → any container host (Railway / Render / Fly). It's a single Docker
-  image; provide `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_ORIGIN`, and
-  `APP_ENV=production`.
-- **Database** → managed Postgres (e.g. Neon). Migrations apply automatically on
-  the first boot.
+Deployed as **Neon** (Postgres) → **Render** (Go API, Docker) → **Vercel**
+(Next.js). A Render blueprint ([`render.yaml`](render.yaml)) makes the backend
+near one-click. Full step-by-step guide: **[DEPLOYMENT.md](DEPLOYMENT.md)**.
+
+In short:
+
+- **Database** → Neon. Copy the pooled connection string; migrations apply on
+  first boot.
+- **Backend** → Render reads `render.yaml`; set `DATABASE_URL` (Neon) and
+  `FRONTEND_ORIGIN` (the Vercel URL). `APP_ENV=production` switches the auth
+  cookie to `Secure` + `SameSite=None` for cross-site use.
+- **Frontend** → Vercel, **Root Directory `frontend`**, with
+  `NEXT_PUBLIC_API_URL` pointing at the Render API.
