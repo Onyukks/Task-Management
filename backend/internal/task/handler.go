@@ -2,6 +2,7 @@ package task
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -66,6 +67,12 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		httpx.Internal(w, err)
 		return
+	}
+	// Record the creation in the activity log (best-effort).
+	if err := h.repo.logActivities(r.Context(), t.ID, p.UserID, []activityEntry{
+		{Action: "created", Detail: "Created the task"},
+	}); err != nil {
+		slog.Warn("failed to log create activity", "task", t.ID, "error", err)
 	}
 	h.broker.Publish(p.UserID, events.Event{Type: "task.created", Data: t})
 	httpx.JSON(w, http.StatusCreated, t)
@@ -217,13 +224,46 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Fetch the current state first so we can record exactly what changed.
+	before, err := h.repo.Get(r.Context(), id, ownerScope(p))
+	if err != nil {
+		notFoundOrInternal(w, err)
+		return
+	}
+
 	t, err := h.repo.Update(r.Context(), id, ownerScope(p), in)
 	if err != nil {
 		notFoundOrInternal(w, err)
 		return
 	}
+
+	if entries := diffActivities(before, t); len(entries) > 0 {
+		if err := h.repo.logActivities(r.Context(), t.ID, p.UserID, entries); err != nil {
+			slog.Warn("failed to log update activity", "task", t.ID, "error", err)
+		}
+	}
 	h.broker.Publish(t.UserID, events.Event{Type: "task.updated", Data: t})
 	httpx.JSON(w, http.StatusOK, t)
+}
+
+// Activity returns the change history for a task.
+func (h *Handler) Activity(w http.ResponseWriter, r *http.Request) {
+	p, _ := middleware.PrincipalFrom(r.Context())
+	id, ok := parseID(w, r)
+	if !ok {
+		return
+	}
+	// Enforce ownership (admins bypass) by loading the task with the same scope.
+	if _, err := h.repo.Get(r.Context(), id, ownerScope(p)); err != nil {
+		notFoundOrInternal(w, err)
+		return
+	}
+	activity, err := h.repo.ListActivity(r.Context(), id)
+	if err != nil {
+		httpx.Internal(w, err)
+		return
+	}
+	httpx.JSON(w, http.StatusOK, map[string]any{"activity": activity})
 }
 
 // ---- Delete ----

@@ -9,6 +9,7 @@ import { TaskList } from "./task-list";
 import { Pagination } from "./pagination";
 import { TaskFormModal } from "./task-form-modal";
 import { ConfirmDialog } from "./confirm-dialog";
+import { ActivityModal } from "./activity-modal";
 import { useAuth } from "@/lib/auth-context";
 import { useDebounce } from "@/lib/use-debounce";
 import { useTasks, useTaskMutations, useTaskStream } from "@/lib/use-tasks";
@@ -34,6 +35,7 @@ export function TasksView() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
   const [deleting, setDeleting] = useState<Task | null>(null);
+  const [historyFor, setHistoryFor] = useState<Task | null>(null);
 
   const debouncedSearch = useDebounce(toolbar.search, 300);
 
@@ -148,6 +150,7 @@ export function TasksView() {
           onToggleComplete={toggleComplete}
           onEdit={openEdit}
           onDelete={(task) => setDeleting(task)}
+          onHistory={(task) => setHistoryFor(task)}
           onNewTask={openCreate}
         />
 
@@ -185,6 +188,7 @@ export function TasksView() {
         onConfirm={() => deleting && remove.mutate(deleting.id)}
         onClose={() => setDeleting(null)}
       />
+      <ActivityModal task={historyFor} onClose={() => setHistoryFor(null)} />
     </div>
   );
 }

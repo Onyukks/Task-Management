@@ -29,6 +29,7 @@ describe("TaskCard", () => {
         onToggleComplete={noop}
         onEdit={noop}
         onDelete={noop}
+        onHistory={noop}
       />,
     );
     expect(screen.getByText("Write the README")).toBeInTheDocument();
@@ -44,6 +45,7 @@ describe("TaskCard", () => {
         onToggleComplete={onToggle}
         onEdit={noop}
         onDelete={noop}
+        onHistory={noop}
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: /mark as done/i }));
@@ -57,6 +59,7 @@ describe("TaskCard", () => {
         onToggleComplete={noop}
         onEdit={noop}
         onDelete={noop}
+        onHistory={noop}
       />,
     );
     // Overdue tasks render an alert affordance via the "Jan 1, 2020" date label.
@@ -71,6 +74,7 @@ describe("TaskCard", () => {
         onToggleComplete={noop}
         onEdit={noop}
         onDelete={onDelete}
+        onHistory={noop}
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: /delete task/i }));

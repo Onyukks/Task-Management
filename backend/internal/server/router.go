@@ -59,6 +59,7 @@ func New(pool *pgxpool.Pool, cfg *config.Config) http.Handler {
 		r.Get("/", taskHandler.List)
 		r.Get("/stream", taskHandler.Stream)
 		r.Get("/{id}", taskHandler.Get)
+		r.Get("/{id}/activity", taskHandler.Activity)
 		r.Patch("/{id}", taskHandler.Update)
 		r.Delete("/{id}", taskHandler.Delete)
 	})

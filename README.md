@@ -24,6 +24,8 @@ keyboard-first (think Linear/Raycast) — rather than a CRUD demo.
 - **Optimistic UI** — create / complete / delete update instantly and roll back
   automatically if the server rejects the change.
 - **Real-time** — task changes stream over Server-Sent Events (e.g. across tabs).
+- **Activity log** — every task keeps a per-field change history (created,
+  status, priority, due date, …) shown as a timeline.
 - **⌘K command palette**, **dark/light mode** (persisted), responsive layout,
   and graceful loading / empty / error states throughout.
 - **Tests + CI** — Go unit + HTTP integration tests, frontend Vitest suite, all
@@ -133,6 +135,7 @@ Errors share one envelope: `{ "error": { "code", "message", "fields?" } }`.
 | POST   | `/tasks`        | Create a task                                  |
 | GET    | `/tasks`        | List (filter/search/sort/paginate — see below) |
 | GET    | `/tasks/{id}`   | Fetch one                                      |
+| GET    | `/tasks/{id}/activity` | Change history for a task               |
 | PATCH  | `/tasks/{id}`   | Partial update                                 |
 | DELETE | `/tasks/{id}`   | Delete                                         |
 | GET    | `/tasks/stream` | Server-Sent Events stream of changes           |
@@ -183,7 +186,8 @@ TEST_DATABASE_URL=postgres://… go test ./...    # + HTTP integration tests
 - `internal/auth` — password hashing, JWT round-trip, tamper/expiry rejection
 - `internal/httpx` — PATCH three-state semantics (absent vs null vs value)
 - `internal/server` — full HTTP flow: **ownership isolation** (user B can't touch
-  user A's task) and **filter + search + sort composing** correctly
+  user A's task), **filter + search + sort composing** correctly, and the
+  **activity log** recording created/status changes
 
 **Frontend**
 

@@ -176,6 +176,45 @@ func TestFilterSearchSortCompose(t *testing.T) {
 	}
 }
 
+// TestActivityLogRecordsChanges verifies the activity-log bonus: creating a
+// task and then changing its status both produce history entries.
+func TestActivityLogRecordsChanges(t *testing.T) {
+	pool := testPool(t)
+	defer pool.Close()
+	srv := newTestServer(t, pool)
+
+	u := newClient(t, srv)
+	u.signup("logger@example.com", "Logger", "password123")
+	id := u.createTask("Task with history")
+
+	// Change status -> should log a "status" activity in addition to "created".
+	resp := u.do(http.MethodPatch, "/tasks/"+id, map[string]string{"status": "done"})
+	resp.Body.Close()
+
+	act := u.do(http.MethodGet, "/tasks/"+id+"/activity", nil)
+	defer act.Body.Close()
+	if act.StatusCode != http.StatusOK {
+		t.Fatalf("activity: status %d", act.StatusCode)
+	}
+	var out struct {
+		Activity []struct {
+			Action string `json:"action"`
+		} `json:"activity"`
+	}
+	json.NewDecoder(act.Body).Decode(&out)
+
+	actions := map[string]bool{}
+	for _, a := range out.Activity {
+		actions[a.Action] = true
+	}
+	if !actions["created"] {
+		t.Error("expected a 'created' activity entry")
+	}
+	if !actions["status"] {
+		t.Error("expected a 'status' activity entry after changing status")
+	}
+}
+
 func (c *client) listCount(path string) int {
 	resp := c.do(http.MethodGet, path, nil)
 	defer resp.Body.Close()

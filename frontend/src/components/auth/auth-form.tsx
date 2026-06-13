@@ -18,10 +18,16 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-const signupSchema = loginSchema.extend({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
+const signupSchema = loginSchema
+  .extend({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((v) => v.password === v.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type Mode = "login" | "signup";
 
@@ -112,6 +118,20 @@ export function AuthForm({ mode }: { mode: Mode }) {
               autoComplete={isSignup ? "new-password" : "current-password"}
             />
           </Field>
+
+          {isSignup && (
+            <Field
+              label="Confirm password"
+              error={errors.confirmPassword?.message}
+            >
+              <Input
+                {...register("confirmPassword")}
+                type="password"
+                placeholder="••••••••"
+                autoComplete="new-password"
+              />
+            </Field>
+          )}
 
           {serverError && (
             <p className="rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">

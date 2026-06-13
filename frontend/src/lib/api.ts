@@ -119,4 +119,15 @@ export const tasksApi = {
 
   remove: (id: string) =>
     request<void>(`/tasks/${id}`, { method: "DELETE" }),
+
+  activity: (id: string) =>
+    request<{ activity: TaskActivity[] }>(`/tasks/${id}/activity`),
 };
+
+export interface TaskActivity {
+  id: string;
+  action: string;
+  detail: string;
+  actorName: string;
+  createdAt: string;
+}

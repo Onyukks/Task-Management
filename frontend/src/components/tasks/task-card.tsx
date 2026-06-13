@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Pencil, Trash2, Calendar, AlertTriangle } from "lucide-react";
+import { Check, Pencil, Trash2, Calendar, AlertTriangle, History } from "lucide-react";
 import { format, isPast, isToday } from "date-fns";
 import { StatusBadge, PriorityBadge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ interface Props {
   onToggleComplete: (task: Task) => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
+  onHistory: (task: Task) => void;
 }
 
 export function TaskCard({
@@ -21,6 +22,7 @@ export function TaskCard({
   onToggleComplete,
   onEdit,
   onDelete,
+  onHistory,
 }: Props) {
   const done = task.status === "done";
   const due = task.dueDate ? new Date(task.dueDate) : null;
@@ -62,6 +64,13 @@ export function TaskCard({
 
           {/* Actions — appear on hover, always visible on touch */}
           <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 max-sm:opacity-100">
+            <button
+              onClick={() => onHistory(task)}
+              aria-label="View activity"
+              className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-foreground"
+            >
+              <History className="h-3.5 w-3.5" />
+            </button>
             <button
               onClick={() => onEdit(task)}
               aria-label="Edit task"

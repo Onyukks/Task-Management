@@ -16,6 +16,7 @@ interface Props {
   onToggleComplete: (task: Task) => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
+  onHistory: (task: Task) => void;
   onNewTask: () => void;
 }
 
@@ -83,6 +84,7 @@ export function TaskList(props: Props) {
             onToggleComplete={props.onToggleComplete}
             onEdit={props.onEdit}
             onDelete={props.onDelete}
+            onHistory={props.onHistory}
           />
         ))}
       </AnimatePresence>
