@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
@@ -23,6 +24,11 @@ func Connect(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	}
 	cfg.MaxConns = 10
 	cfg.MaxConnLifetime = time.Hour
+	// Use unnamed prepared statements so the app works behind transaction-mode
+	// connection poolers (e.g. Neon's PgBouncer), which multiplex backends and
+	// would otherwise collide on cached statement names. Harmless on a direct
+	// connection.
+	cfg.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
 
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
