@@ -1,6 +1,4 @@
 # Env
-.env
-.env.local
 *.local
 
 # Go
@@ -23,3 +21,4 @@ npm-debug.log*
 .DS_Store
 .idea/
 *.swp
+config.bat
