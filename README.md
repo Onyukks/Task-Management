@@ -4,12 +4,16 @@ A full-stack task management application: a **Go + PostgreSQL** REST API and a
 **Next.js** frontend. Built to feel like a real product — fast, dense, and
 keyboard-first (think Linear/Raycast) — rather than a CRUD demo.
 
-> **Live demo:** _add deployed frontend + API URLs here_
+> **Live demo:** **https://task-management-alpha-topaz.vercel.app**
+> (API: https://tasks-api-fhth.onrender.com)
+>
+> _The API runs on a free tier that sleeps after ~15 min idle, so the first
+> request (e.g. login) may take ~30–60s to wake; it's fast afterwards._
 >
 > **Try it:** sign up in seconds for the normal user experience. To see the
-> **admin** "view all tasks" feature, log in with the seeded admin credentials
-> (see [Admin role](#admin-role)). Toggle **light/dark** with the sun/moon icon
-> (top-right) or via **⌘K → Toggle theme**.
+> **admin** "view all tasks" feature, log in with the seeded admin —
+> **`admin@demo.io`** / **`admin12345`** (see [Admin role](#admin-role)). Toggle
+> **light/dark** with the sun/moon icon (top-right) or via **⌘K → Toggle theme**.
 
 ---
 
