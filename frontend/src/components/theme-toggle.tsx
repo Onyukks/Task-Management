@@ -9,8 +9,13 @@ export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch: render a neutral icon until mounted.
-  useEffect(() => setMounted(true), []);
+  // Avoid hydration mismatch: the server can't know the persisted theme, so we
+  // render a neutral icon until mounted on the client. This is the documented
+  // next-themes pattern — a one-time mount flag, not a render-driving update.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client mount flag, not a reactive update
+    setMounted(true);
+  }, []);
 
   const isDark = resolvedTheme === "dark";
 

@@ -37,10 +37,12 @@ services:
         condition: service_healthy
 
   web:
-    build: ./frontend
-    environment:
-      # Browser-side calls hit the API on localhost (host network port mapping).
-      NEXT_PUBLIC_API_URL: http://localhost:8080
+    build:
+      context: ./frontend
+      args:
+        # Public env is baked at build time; the browser uses it to reach the
+        # API via the host's published port (not the internal compose network).
+        NEXT_PUBLIC_API_URL: http://localhost:8080
     ports:
       - "3000:3000"
     depends_on:
